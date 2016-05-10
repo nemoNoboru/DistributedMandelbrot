@@ -10,6 +10,7 @@ public class mandelbrotMatrix {
 	}
 	
 	public void setMatrix(int x, int y, int[][] m){
+		System.out.println("added chunk to main");
 		for(int i = x; i < m.length; i++ ){
 			for (int j = y; j < m[0].length ; j++ ){
 				this.matrix[i][j] = m[i][j];

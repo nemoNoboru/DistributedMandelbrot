@@ -18,6 +18,7 @@ public class MainServer {
 			ServerSocket serv = new ServerSocket(1337);
 			while(!tasks.isEmpty()){
 				workerpool.execute(new Worker(serv.accept(), tasks.pop(), mandeloutput ));
+				System.out.println("Accepted socket");
 			}
 			serv.close();
 		} catch (IOException e) {
@@ -30,7 +31,7 @@ public class MainServer {
 		System.out.println("closing server...");
 		workerpool.shutdown();
 		try {
-			if (!workerpool.awaitTermination(60, TimeUnit.SECONDS)) {
+			if (!workerpool.awaitTermination(600, TimeUnit.SECONDS)) {
 			       workerpool.shutdownNow(); // Cancel currently executing tasks
 			}
 		} catch (InterruptedException e) {
@@ -41,21 +42,29 @@ public class MainServer {
 	}
 	
 	public static void main(String[] args) {
-		int resX = 300;
-		int resY = 300;
+		P size = new P(20,20); // size of the image to generate
 		tasks = new LinkedList<Task>();
-		// work in progress
-		P init = new P(0,0);
-		P end = new P(resX,resY);
-		Complex c = new Complex(-1,1);
-		Complex cend = new Complex(0.4,0.4);
 		
-		tasks.push(new Task(init, end, c, cend));
+		// divide the tasks
+		Complex initz = new Complex(-2,1);
+		Complex endz = new Complex(1,-1);
+		
+		for(int i = 0 ; i  < size.x(); i += 10){
+			for(int j = 0; j  < size.y(); j += 10){
+				P init = new P(i,j);
+				P end = new P(i+10,j+10);
+				tasks.add(new Task(init,end,initz,endz,size));
+				System.out.println("created " + init.x() + " " + init.y() + " TO " + end.x + " " + end.y);
+			}
+		}
+		System.out.println("created "+ tasks.size() +" tasks");
+		//end
+		
 		System.out.println("Building worker pool...");
-		workerpool = Executors.newFixedThreadPool(8);
+		workerpool = Executors.newFixedThreadPool(2);
 
 		
-		mandeloutput = new mandelbrotMatrix(resX,resY);
+		mandeloutput = new mandelbrotMatrix(size.x(),size.y());
 		
 		setupServer();
 		shutdownServer();

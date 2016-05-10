@@ -31,6 +31,7 @@ public class Worker implements Runnable {
 		outObject.writeObject(this.task);
 		this.task = (Task) inObject.readObject(); //blocking
 		
+		System.out.println("Coping chunk to main output");
 		this.copyOnBig();
 		
 		//close things

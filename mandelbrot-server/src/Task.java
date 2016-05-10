@@ -1,3 +1,4 @@
+
 import java.io.Serializable;
 
 
@@ -45,16 +46,25 @@ public class Task implements Serializable {
 		this.matrix = matrix;
 	}
 
-	private P init, end;
+	private P init, end , size;
 	private Complex initZ, endZ;
 	private int[][] matrix;
 	
-	public Task( P init, P end, Complex initZ, Complex endZ ){
-		P result = init.minus(end);
+	public Task( P init, P end, Complex initZ, Complex endZ , P size){
+		P result = end.minus(init);
 		matrix = new int[result.x][result.y];
 		this.init = init;
 		this.end = end;
 		this.initZ = initZ;
 		this.endZ = endZ;
+		this.setSize(size);
+	}
+
+	public P getSize() {
+		return size;
+	}
+
+	public void setSize(P size) {
+		this.size = size;
 	}
 }

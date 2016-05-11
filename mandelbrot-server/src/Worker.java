@@ -10,7 +10,7 @@ public class Worker implements Runnable {
 
 	private Task task;
 	private Socket socket;
-	private mandelbrotMatrix matrix;
+	private volatile mandelbrotMatrix matrix;
 	
 	
 	public Worker(Socket s, Task t, mandelbrotMatrix m){
@@ -31,7 +31,7 @@ public class Worker implements Runnable {
 		outObject.writeObject(this.task);
 		this.task = (Task) inObject.readObject(); //blocking
 		
-		System.out.println("Coping chunk to main output");
+		//System.out.println("Coping chunk to main output");
 		this.copyOnBig();
 		
 		//close things
@@ -50,7 +50,7 @@ public class Worker implements Runnable {
 	}
 	
 	private void copyOnBig(){
-		matrix.setMatrix(task.getInit().x(), task.getInit().y(), task.getMatrix());
+		matrix.setMatrix(task);
 	}
 
 }

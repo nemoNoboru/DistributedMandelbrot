@@ -1,3 +1,7 @@
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+
 public class mandelbrotMatrix {
 	private int matrix [][];
 	
@@ -9,11 +13,11 @@ public class mandelbrotMatrix {
 		this.matrix[x][y] = value;  
 	}
 	
-	public void setMatrix(int x, int y, int[][] m){
-		System.out.println("added chunk to main");
-		for(int i = x; i < m.length; i++ ){
-			for (int j = y; j < m[0].length ; j++ ){
-				this.matrix[i][j] = m[i][j];
+	public void setMatrix(Task t){
+		//System.out.println("added chunk to main");
+		for(int i = 0; i < t.getMatrix().length; i++ ){
+			for (int j = 0; j < t.getMatrix()[0].length ; j++ ){
+				this.matrix[i+t.getInit().x()][j+t.getInit().y()] = t.getMatrix()[i][j];
 			}
 		}
 	}
@@ -26,6 +30,21 @@ public class mandelbrotMatrix {
 			System.out.println();
 		}
 	}
+	
+	public void printToFile(){
+		PrintStream out;
+		try {
+			out = new PrintStream(new FileOutputStream("output.pgm"));
+			System.setOut(out);
+			System.out.println("P1");
+			System.out.println(matrix.length+" "+matrix.length);
+			this.printSTDOUT();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public String write(){ //write to disk
 		return "unimplemented";

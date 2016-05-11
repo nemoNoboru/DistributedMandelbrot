@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 public class MainServer {
 
 	private static ExecutorService workerpool;
-	private static LinkedList<Task> tasks;
-	private static mandelbrotMatrix mandeloutput;
+	private volatile static LinkedList<Task> tasks;
+	private volatile static mandelbrotMatrix mandeloutput;
 	
 	public static void setupServer(){
 		System.out.println("Erecting server...");
@@ -42,7 +42,15 @@ public class MainServer {
 	}
 	
 	public static void main(String[] args) {
-		P size = new P(20,20); // size of the image to generate
+		int sizeX = 200;
+		int sizeY = 200;
+		
+		if (args.length > 1){
+			sizeX = Integer.parseInt(args[0]);
+			sizeY = Integer.parseInt(args[1]);
+		}
+		
+		P size = new P(sizeX,sizeY); // size of the image to generate
 		tasks = new LinkedList<Task>();
 		
 		// divide the tasks
@@ -54,21 +62,22 @@ public class MainServer {
 				P init = new P(i,j);
 				P end = new P(i+10,j+10);
 				tasks.add(new Task(init,end,initz,endz,size));
-				System.out.println("created " + init.x() + " " + init.y() + " TO " + end.x + " " + end.y);
+				//System.out.println("created " + init.x() + " " + init.y() + " TO " + end.x + " " + end.y);
 			}
 		}
 		System.out.println("created "+ tasks.size() +" tasks");
 		//end
 		
 		System.out.println("Building worker pool...");
-		workerpool = Executors.newFixedThreadPool(2);
+		workerpool = Executors.newCachedThreadPool();
 
 		
 		mandeloutput = new mandelbrotMatrix(size.x(),size.y());
 		
 		setupServer();
 		shutdownServer();
-		mandeloutput.printSTDOUT();
+		mandeloutput.printToFile();
+		
 
 	}
 

@@ -16,19 +16,19 @@ public class MainClient {
 		double sizeY = t.getEndZ().im() - t.getInitZ().im();
 		double stepX = sizeX / result.x();
 		double stepY = sizeY / result.y();
-		System.out.println("stepX "+ stepX );
+		System.out.println("Processing task");
 		
 		for (int i = 0 ; i < t.getMatrix().length ; i++ ){
 			for (int j = 0 ; j < t.getMatrix()[0].length ; j++ ){
 				double X = t.getInitZ().re() + ((t.getInit().x()+i) * stepX);
 				double Y = t.getInitZ().im() + ((t.getInit().y()+j) * stepY);
-				System.out.println("calculando "+ X +" "+ Y);
+				//System.out.println("calculando "+ X +" "+ Y);
 				Complex C = new Complex(X,Y);
 				Complex Z = new Complex(0,0);
-				for (int iter = 0; iter < 2; iter++ ){
+				for (int iter = 0; iter < 3000; iter++ ){
 					Z = Z.times(Z).plus(C);
 					if(2<Z.abs()){
-						t.getMatrix()[i][j] = 1;
+						t.getMatrix()[i][j] = 0;
 						break;
 					} else {
 						t.getMatrix()[i][j] = 1;
@@ -40,9 +40,13 @@ public class MainClient {
 	}
 	
 	public static void main(String[] args) {
-		//while(true){
+		while(true){
 			try {
-				Socket s = new Socket("localhost",1337);
+				String address = "localhost";
+				if(args.length > 0){
+					address = args[0];
+				}
+				Socket s = new Socket(address,1337);
 				OutputStream out = s.getOutputStream();
 				ObjectOutputStream outObject = new ObjectOutputStream(out);
 				InputStream in = s.getInputStream();
@@ -57,7 +61,6 @@ public class MainClient {
 				inObject.close();
 				in.close();
 				s.close();
-				Thread.sleep(1000);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -70,13 +73,10 @@ public class MainClient {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return;
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 		
 
-	//}
+	}
 
 }

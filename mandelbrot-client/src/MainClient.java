@@ -11,7 +11,7 @@ public class MainClient {
 	
 	private static Task Process(Task t){
 		P result = t.getSize();
-		// work in progress
+
 		double sizeX = t.getEndZ().re() - t.getInitZ().re();
 		double sizeY = t.getEndZ().im() - t.getInitZ().im();
 		double stepX = sizeX / result.x();
@@ -25,13 +25,13 @@ public class MainClient {
 				//System.out.println("calculando "+ X +" "+ Y);
 				Complex C = new Complex(X,Y);
 				Complex Z = new Complex(0,0);
-				for (int iter = 0; iter < 3000; iter++ ){
+				for (int iter = 0; iter < 300; iter++ ){
 					Z = Z.times(Z).plus(C);
 					if(2<Z.abs()){
-						t.getMatrix()[i][j] = 0;
+						t.getMatrix()[i][j] = iter;
 						break;
 					} else {
-						t.getMatrix()[i][j] = 1;
+						t.getMatrix()[i][j] = iter;
 					}
 				}
 			}
@@ -39,43 +39,53 @@ public class MainClient {
 		return t;
 	}
 	
+	
 	public static void main(String[] args) {
-		while(true){
-			try {
-				String address = "localhost";
-				if(args.length > 0){
-					address = args[0];
-				}
-				Socket s = new Socket(address,1337);
-				OutputStream out = s.getOutputStream();
-				ObjectOutputStream outObject = new ObjectOutputStream(out);
-				InputStream in = s.getInputStream();
-				ObjectInputStream inObject = new ObjectInputStream(in);
-				
-				Task t = (Task) inObject.readObject();
-				t = Process(t); // get the value even if java passes the argument by copy
-				outObject.writeObject(t);
-				// close things
-				outObject.close();
-				out.close();
-				inObject.close();
-				in.close();
-				s.close();
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
-			}
+		String address = "localhost";
+		if(args.length > 0){
+			address = args[0];
+		}
+		Socket s = null;
+		OutputStream out = null;
+		ObjectOutputStream outObject = null ;
+		InputStream in = null;
+		ObjectInputStream inObject = null;
+		
+		try {
+			s = new Socket(address,1338);
+			out = s.getOutputStream();
+			outObject = new ObjectOutputStream(out);
+			in = s.getInputStream();
+			inObject = new ObjectInputStream(in);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
 		}
 		
+		while(true){
+			Task t;
+			try {
+				t = (Task) inObject.readObject();
+				Process(t);
+				outObject.writeObject(t);
+			} catch (ClassNotFoundException | IOException e) {
+				try {
+					in.close();
+					out.close();
+					inObject.close();
+					outObject.close();
+					s.close();
+					System.out.println("Seems done, check the server");
+					return;
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+			
+		}
 
 	}
 

@@ -25,7 +25,7 @@ public class mandelbrotMatrix {
 	public void printSTDOUT(){
 		for(int i = 0; i < matrix.length; i++ ){
 			for (int j = 0; j < matrix[0].length ; j++ ){
-				System.out.print(matrix[i][j]);
+				System.out.print(matrix[i][j] + " ");
 			}
 			System.out.println();
 		}
@@ -36,8 +36,9 @@ public class mandelbrotMatrix {
 		try {
 			out = new PrintStream(new FileOutputStream("output.pgm"));
 			System.setOut(out);
-			System.out.println("P1");
+			System.out.println("P2");
 			System.out.println(matrix.length+" "+matrix.length);
+			System.out.println(300);
 			this.printSTDOUT();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
